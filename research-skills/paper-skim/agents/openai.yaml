@@ -1,0 +1,4 @@
+interface:
+  display_name: "Paper Skim"
+  short_description: "快速提取论文核心思想，分级补足前置知识，深入分析实验与图表证据"
+  default_prompt: "请使用 $paper-skim 帮我快速浏览这篇论文：去除套路化叙述，分级介绍前置概念，结合原图提取核心思想，深入分析实验，并筛选有价值的 Supplement。"
