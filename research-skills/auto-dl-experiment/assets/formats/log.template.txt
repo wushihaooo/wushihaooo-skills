@@ -1,0 +1,16 @@
+command: python train.py --config configs/M001.yaml
+git commit: 3f2a1c9
+start: 2026-10-01 09:15
+
+==== fold 1 ====
+epoch   1 | train_loss 0.6931 | val_loss 0.6810 | val_auc 0.7123 | val_acc 0.6500 | lr 3.0e-04
+epoch   2 | train_loss 0.6702 | val_loss 0.6655 | val_auc 0.7389 | val_acc 0.6720 | lr 3.0e-04
+...
+fold 1 best: epoch 17 -> fold1/best-auc.pt
+fold 1 val  | auc 0.8120 | acc 0.7600 | recall 0.7143 | precision 0.6522 | f1 0.6818
+fold 1 test | auc 0.7950 | acc 0.7480 | recall 0.6905 | precision 0.6304 | f1 0.6591
+
+==== fold 2 ====
+...
+
+end: 2026-10-01 13:42

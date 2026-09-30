@@ -1,137 +1,94 @@
 ---
 name: auto-dl-experiment
-description: 计算机病理 WSI-MIL 深度学习实验的全流程自动化（建立背景文档、基线、方法设计与创新审查、实现、实验分析、消融、最终报告），每步产出人类刻度文档并由人类确认后推进。当用户要做 WSI/MIL 的基线实验、提出并验证新方法（Ours）、做消融实验或“科研探索”时使用。
+description: 需要在计算机病理 WSI/MIL（病例级、预提取特征）任务上做基线实验、提出并验证新方法（Ours）、做消融或“科研探索”，且每步都要产出可读文档、经研究者确认后再推进时使用。不适用于非病理任务，也不适用于一次性的训练脚本调试。
 ---
 
 # 自动深度学习实验
 
-本 SKILL 指定了一个计算机病理 WSI MIL的实验研究的 pipeline。在了解实验背景信息和获取基线实验结果后，根据过往实验经验制定出新方法并进行实验验证分析，总结经验。最后得到一个能发表论文的方法。
+本 SKILL 定义计算机病理 WSI-MIL 实验研究的流程：了解背景、取得基线结果后，参考过往经验设计新方法，实验验证并总结经验，目标是得到可投稿的方法。每一步都由研究者监督和确认，agent 不自行推进。
 
 ## 实验流程
 
-### 实验步骤模块
+### 步骤模块
 
-进入某个步骤前，先读该步骤对应的文件；只读当前步骤需要的，不要一次性读完全部 references。
+进入某个步骤前，先读该步骤的文件，它包含该步的全部做法和产出要求，并链接到要用的模板。右列是该步要遵守的共用准则。不要一次性读完全部 references。
 
-| 步骤 | 名称 | 步骤说明（必读） | 相关规范与模板 |
+| 步骤 | 名称 | 步骤说明（必读） | 共用准则 |
 | ---- | --- | --- | --- |
-| 1    | 建立实验背景文档             | [step1](references/steps/step1-background.md)              | [产物与文档规范](references/artifacts-and-documents.md)      |
-| 2    | 确认目录结构                 | [step2](references/steps/step2-dir-structure.md)           | [目录结构模板](assets/EXPERIMENT_DIRECTORY_STRUCTURE.md)、[产物与文档规范](references/artifacts-and-documents.md) |
-| 3    | 实现并运行基线               | [step3](references/steps/step3-baseline.md)                | [基线报告模板](assets/BASELINE_REPORT.md)、[病例级 MIL 规则](references/pathology-mil.md)、[训练与证据规范](references/training-and-evidence.md)、[表格准则](references/表格准则.md) |
-| 4    | 文献调查、创新审查与方法设计 | [step4](references/steps/step4-method-think-and-design.md) | [方法设计规范](references/method-design.md)                  |
-| 5    | 实现提出的方法               | [step5](references/steps/step5-code-impl-method.md)        | [病例级 MIL 规则](references/pathology-mil.md)、[训练与证据规范](references/training-and-evidence.md) |
-| 6    | 方法实验、证据分析与共同判断 | [step6](references/steps/step6-experiment-and-analysis.md) | [训练与证据规范](references/training-and-evidence.md)、[表格准则](references/表格准则.md) |
-| 7    | 消融实验                     | [step7](references/steps/step7-ablation-experiment.md)     | [方法设计规范](references/method-design.md)（消融逻辑一节）、[训练与证据规范](references/training-and-evidence.md) |
-| 8    | 最终汇报                     | [step8](references/steps/step8-final-report.md)            | [产物与文档规范](references/artifacts-and-documents.md)、[表格准则](references/表格准则.md) |
+| 1 | 建立实验背景文档 | [01-background](references/steps/01-background.md) | — |
+| 2 | 实现并运行基线 | [02-baseline](references/steps/02-baseline.md) | [病例级 MIL 规则](references/guidelines/pathology-mil.md)、[训练规范](references/guidelines/training.md) |
+| 3 | 文献调查、创新审查与方法设计 | [03-novelty-and-design](references/steps/03-novelty-and-design.md) | — |
+| 4 | 实现提出的方法 | [04-implementation](references/steps/04-implementation.md) | [病例级 MIL 规则](references/guidelines/pathology-mil.md)、[训练规范](references/guidelines/training.md) |
+| 5 | 方法实验与共同判断 | [05-experiment-analysis](references/steps/05-experiment-analysis.md) | [训练规范](references/guidelines/training.md) |
+| 6 | 消融实验 | [06-ablation](references/steps/06-ablation.md) | [训练规范](references/guidelines/training.md) |
+| 7 | 最终汇报 | [07-final-report](references/steps/07-final-report.md) | — |
 
-### 实验状态机
+### 模板
 
-下面用 python 代码简要说明了每个步骤执行顺序的关系
+所有输入和输出都有模板，按模板填写，不添加额外内容：
 
-```python
-  step1()
-  step2()
-  step3()
-  while True:
-    step4()
-    step5()
-    step6()
-    if (human_think_method_better_than_baseline ==  False):
-      step8()
-      continue
-    step7()
-    if (human_think_method_success == False):
-      step8()
-      continue
-    step8()
-    break
-```
+| 目录 | 用途 | 模板 |
+|---|---|---|
+| `assets/docs/` | 写进项目 `docs/` 的文档 | 进度、数据集、实验细节、实验协议、目录说明、基线结果、方法、方法结果、最终报告、经验 |
+| `assets/messages/` | 发给研究者的消息 | [信息收集](assets/messages/intake.template.md)、[步骤汇报](assets/messages/step-report.template.md)、[开跑计划](assets/messages/launch-plan.template.md) |
+| `assets/formats/` | 训练程序的输入与输出文件 | 实验配置、标签表、划分表、`log.txt`、`metrics.csv`、预测文件（规定见[训练规范](references/guidelines/training.md)） |
 
-### 全局约定
+### 步骤流转
 
-- 所有结果表格遵循 [表格准则](references/表格准则.md)。
-- 文档的写作原则、默认目录结构的格式见 [产物与文档规范](references/artifacts-and-documents.md)
-- 每一步完成后，先更新 `WORKFLOW_STATE.json`，再停下等待人类确认。
+状态机的状态就是步骤：每个步骤先处于“执行中”，产出完成后转为“待确认”；研究者确认后转入下一状态，全部结束为“已完成”。步骤 1–2 顺序执行一次；步骤 3–7 是按方法编号（M001、M002……）循环的“一轮”。步骤 1–4 确认后直接进入下一步；步骤 5、6、7 的去向由研究者的判断决定：
 
-## 特点
+| 当前步骤末的研究者判断 | 下一步 |
+| --- | --- |
+| 步骤 5：成功，达到判据 | 步骤 6 |
+| 步骤 5：失败 | 步骤 7（写负结果） |
+| 步骤 5：证据不足，或人机判断不一致 | 留在步骤 5，按确认的补充方案验证 |
+| 步骤 6：消融充分，支持核心机制 | 步骤 7 |
+| 步骤 6：消融不支持核心机制 | 步骤 7（如实降低结论） |
+| 步骤 6：消融不充分 | 留在步骤 6，追加消融 |
+| 步骤 7：本轮成功 | 已完成 |
+| 步骤 7：本轮失败或结论被降低 | 获准后回步骤 3，新方法编号 |
 
-本 SKILL 有着人类可读性、人类介入性、人类可复现性、创新性、记忆性这些特点。
+任何状态下研究者都可以要求**补充基线**：只为新基线执行步骤 2（见步骤2“补充基线”），确认后回到原状态。
 
-### 人类可读性
+## 全局约定
 
-人类可读性包括以下几个方面：
+1. **确认门**：每步完成后，把 `docs/global-state.md` 的当前状态更新为“步骤 N · 待确认”，按[步骤汇报模板](assets/messages/step-report.template.md)汇报，停下等待研究者确认；只有研究者明确同意才进入下一步。不自动进入下一步、下一轮或发布结果。
+2. **进度文件**：`docs/global-state.md` 由步骤 1 按[进度模板](assets/docs/global-state.template.md)创建，只有三项：当前状态、当前实验、待决事项。新会话先读它，从记录的步骤继续；文件不存在则视为新任务，从步骤 1 开始。
+3. **实验编号**：每个基线、新方法、消融臂都是独立的实验，配置、运行结果、文档都用同一个编号。
 
-1. 文档长度：ai agents 的输出长度是远超出人类阅读接受长度的，你需要分辨那些是需要呈现给人类阅读的内容，那些是因为严谨需要简要标注，那些是需要保存在一个复杂文档，不需要呈现给人类的内容。
-2. 专业程度：在描述深度学习方法的过程中，需要考虑如何描述更加让人类易懂。如：这个知识是否是计算机深度学习默认的知识，还是需要解释。并且描述方法需要按照论文 Method 一节那样呈现出人类可读性，而不是AI设计很多繁杂的模块。
-3. 图表优先：优先使用图表来展现内容，人类是视觉动物，图表更加直观。
-4. 过往描述的内容可以简略，在曾经的设计中使用过的方法可以简略介绍，并表明在那里讲解过了。
-5. 先写关键内容、结论和待决事项，优先用简短表格或结构图；不堆流程复述、重复约束、核验流水账和无关历史。
-6. 若 SKILL 中提供了模板，优先使用模板，按照模板，不要添加额外内容。
+   | 编号 | 含义 |
+   |---|---|
+   | `B001-ABMIL` | 基线：`B` + 三位序号 + 方法名 |
+   | `M001` | 新方法，编号不重复，失败也不回收 |
+   | `M001-r02` | 同一假设的小修订；机制变化则用新编号 |
+   | `M001-A01-no-gate` | M001 的消融臂：`A` + 两位序号 + 改动说明 |
 
-### 人类介入性
+   项目目录见[目录结构模板](assets/docs/project-dir-structure.template.md)。
+4. **可复现**：每个实验一份配置 `configs/<实验编号>.yaml`，一条命令 `python train.py --config configs/<实验编号>.yaml` 就能复现；文档中给出的就是这条命令。
+5. **开跑前给出预估**：每批正式训练都按[训练规范](references/guidelines/training.md)的流程执行：冒烟、给出预估耗时和启动命令，由研究者决定是否、何时开跑。
+6. **结果表格式**：数值写 `均值 (标准差)`，全表位数一致。每列最好的加粗，第二好的用斜体；“最好”按指标方向判断（AUC、ACC、C-index 越大越好，Brier、损失越小越好），并列同样标记。混淆矩阵等不可排序的列不标记；未完成的单元格留空，不填 0。
 
-人类介入性是允许人类介入到实验流程中的决策过程中，而不是让 agents 毫无指导地迭代实验，白白浪费计算资源。
+   | 方法 | AUC | ACC | Brier |
+   | --- | ---: | ---: | ---: |
+   | Method_1 | **0.82 (0.02)** | *0.75 (0.03)* | *0.18 (0.01)* |
+   | Method_2 | *0.80 (0.03)* | **0.77 (0.02)** | **0.17 (0.01)** |
+   | Method_3 | 0.76 (0.04) | 0.71 (0.03) | 0.21 (0.02) |
 
-1. 每个 step 完成，都要由人类监督，认为完成才能进入下一个 step。
-2. 在 step4 时，人类可以对 agents 的方案提出否定，但是这并不能形成经验，因为否定的原因不一定是表现不行。否定的方案需要重新设计，并不要用特殊记号说明这是被人类否定过的。
-3. 每个 step 的产出都要人类确认，这些产出大部分都需要是人类可读的。
+## 记忆性
 
-### 人类可复现性
+失败是成功之母：失败的设计与实验要提炼成经验，而不是丢在原地让后续实验摸不着头脑。经验让每一轮设计知道：试过什么、否定了什么、否定得有多确定、哪些模块值得继续。它同时防止两种错误：重复已被强否定的想法，和把一次糟糕的实现误判成“想法不行”。
 
-实验不能是 agents 来启动，未来人类会不知道如何复现这个实验，哪怕代码就在这里。这要求项目拥有良好的目录结构和方法（方法是指ABMIL和CLAM这种方法）的解耦性。
+经验只有一个文档 `docs/experience.md`（[模板](assets/docs/experience.template.md)），研究者一次就能读完：
 
-要求每一步都是由人类在终端输入指令来执行，agents需要在 step3 和 step5 给出执行的指令，如:
-```
-python main.py --model_type "abmil"
-```
+- **项目现状**：顶部不超过两句话，写目前最强的方法和最大的未解问题。
+- **每轮一条**：固定 5 行（假设、结果、否定或支持了什么、可保留的模块、下次采用/避免什么），每行一句话，末尾链接到该轮的 `final-report.md`。
 
-### 创新性
+| 时机 | 动作 |
+|---|---|
+| 步骤 2 结束（含补充基线） | 创建或更新“项目现状” |
+| 步骤 3 开始 | 必读 `experience.md`；在本轮 `method.md` 写明“继承与规避” |
+| 步骤 7 | 追加本轮一条，更新“项目现状” |
 
-Ours 方法的目标是达到可投稿于同领域期刊/会议的创新水平，而不是对已有方法的微调或简单组合。
-
-创新的判断标准，满足以下至少一条，且必须有明确动机支撑：
-
-- 针对任务/数据的特定问题（如：数据特性、临床先验、已有方法的失效模式）提出新的机制；
-- 对已有方法的局限做出有依据的分析，并提出针对性改进；
-- 以新的方式建模或融合信息，且能解释其必要性。
-
-以下情况不视为创新：
-- 直接复用他人论文的核心结构，仅更换名称或数据集；
-- 仅堆叠已有模块（如 A + B + C）而无"为什么需要这种组合"的论证；
-- 仅调整超参数、backbone、特征提取器或训练技巧。
-
-提出方法前必须完成
-
-1. 文献对照：检索并列出与本方法最接近的 3-5 篇工作，逐篇说明与本方法的相同点和核心区别。不得凭记忆编造论文或结论，引用的工作必须能检索到出处。
-2. 动机链条：写明“观察到的问题 -> 假设 -> 机制设计"，每个模块需说明其解决的具体问题。
-3. 创新点声明：用一句话概括核心创新，并说明可以用那个实验/指标来验证它。
-
-从”与最相近工作的差异程度、动机是否充分、是否可被消融验证“三方面自评，给出等级（高/中/低）及理由。
-
-- 若为”低“：不得启动正式实验，应该返回调研，或和人类讨论。
-- 不得为通过而夸大创新性，如实报告”创新不足“是被鼓励的。
-- agent 的自评只作参考，人类确认后才进入大算力实验。
-- 优先选择简洁、动机清晰的改进，而非复杂的多模块堆叠
-
-### 记忆性
-
-### 记录
-
-```
-docs/
-├── experience/
-│   ├── INDEX.md            # 经验索引（一行一条）
-│   └── lessons/            # 提炼后的经验
-└── explorations/
-    └── 2026-xx-xx_主题/
-        └── report.md       # 该次探索的完整记录
-```
-
-
-
-每次科研结束
-
-失败是成功之母，失败的设计与实验要提取成经验管理到一个经验文档中，而不只是存放在那里，让后续的实验摸不着头脑。
-经验包括，实验的失败否定了什么，否定力度怎么样。但是其中某些模块又是成功的，可以保留设计，拥有继续探索的潜力。
-
-总的经验目录放置在 docs/experience/lessons
+- 标题写结论和证据强度。**强**＝达到判据且有消融印证；**中**＝有基线对照，但缺消融或仅单一种子；**弱**＝仅单点估计或事后发现。
+- **技术性失败**（实现错误、数值不稳、输入不匹配）单独标注，它不是对假设的否定，修复后可以重跑。
+- 只追加，不改写旧条目；后来的证据推翻了旧结论，在新条目里说明。

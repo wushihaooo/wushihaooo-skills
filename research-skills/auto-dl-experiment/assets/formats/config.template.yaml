@@ -1,0 +1,38 @@
+# 模板：复制为 configs/<实验编号>.yaml（去掉 .template）。每个实验一份完整配置，不继承其他文件；
+# 公共设置的取值与 docs/desc-experiments/02-experiment-details.md 一致。
+# 尖括号为待填项；示例值只说明格式，不是默认值。训练时合并命令行覆盖后，原样写入运行目录的 config.yaml。
+
+experiment_id: <B001-ABMIL>          # 与文件名一致
+seed: <42>
+
+data:
+  features_dir: <外部特征目录>
+  labels_csv: data/metadata/labels.csv
+  splits_csv: data/splits/splits.csv
+  n_folds: <5>
+
+model:
+  name: <abmil>                      # src/models 中注册的模型名
+  # 以下只写该模型特有的超参数
+  <hidden_dim>: <256>
+
+train:
+  optimizer: <adamw>
+  lr: <3.0e-4>
+  lr_schedule: <none>
+  weight_decay: <1.0e-4>
+  dropout: <0.25>
+  batch_size: <1>                    # 每步的病例数
+  grad_accum: <16>                   # 有效 batch = batch_size × grad_accum
+  max_epochs: <100>
+  early_stop_patience: <10>          # 验证选轮指标连续多少个 epoch 无改善即停
+  select_metric: <auc>               # 选轮指标，也决定 best 权重文件名 best-<指标>.pt
+  loss: <ce>
+  class_weight: <balanced>
+  grad_clip: <5.0>
+  precision: <fp32>
+
+eval:
+  metrics: [<auc>, <acc>, <recall>, <precision>, <f1>]
+  threshold: <0.5>
+  positive_class: <1>
