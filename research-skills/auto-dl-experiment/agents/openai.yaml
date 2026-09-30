@@ -1,4 +1,4 @@
 interface:
   display_name: "自动深度学习实验"
-  short_description: "按八步审批流程完成数据审计、基线、创新设计、训练、机制分析与消融实验"
+  short_description: "自动进行计算机病理 WSI MIL 领域的深度学习实验"
   default_prompt: "使用 $auto-dl-experiment，根据我提供的数据集目录开展实验；先完成步骤1，汇报并等待确认。"
