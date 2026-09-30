@@ -9,7 +9,7 @@
 
 预估耗时（<GPU 型号 × 数量>）：每 epoch 实测约 <t>；整批约 <下限–上限>，按 epoch 上限计算，未计早停。主要不确定性：<…>。
 
-启动命令：
+启动命令（在项目根目录、<环境名> 环境下，前台运行）：
 
 ```bash
 python train.py --config configs/<B001-ABMIL>.yaml
@@ -17,4 +17,4 @@ python train.py --config configs/<B001-ABMIL>.yaml
 
 运行目录：`runs/<实验编号>/<启动时间>/`，训练日志是其中的 `log.txt`。
 
-请确认是否开跑、何时开跑。
+请在终端运行上面的命令；训练结束或出错时通知我，我再检查结果。
